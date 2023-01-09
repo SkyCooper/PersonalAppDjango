@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -27,8 +28,9 @@ class Personal(models.Model):
   title = models.CharField(max_length=2, choices=TITLES)
   gender = models.SmallIntegerField(choices=GENDERS)
   salary = models.IntegerField()
-  department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="departments")
+  department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="personals")
   start_date = models.DateTimeField()
+  created_user = models.ForeignKey(User, on_delete=models.CASCADE)
   
   
   def __str__(self):
