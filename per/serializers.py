@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from .models import *
+from pprint import pprint
 
 
 class PersonalSerializer(serializers.ModelSerializer):
   created_user = serializers.StringRelatedField()
-  # title = serializers.SerializerMethodField()
-  # gender = serializers.SerializerMethodField()
+  # created_user_id = serializers.IntegerField(read_only=True)
   days_since_joined = serializers.SerializerMethodField()
+
+  
   class Meta:
     model = Personal
     fields = ("id", "first_name", "last_name", "salary","title", 
@@ -18,34 +20,42 @@ class PersonalSerializer(serializers.ModelSerializer):
     current_time = datetime.datetime.now()
     return current_time.day - obj.start_date.day
   
-  # def get_created_user(self, obj):
-  #   return self.context["request"].user.username
+  # gender = serializers.SerializerMethodField()
+  # def get_gender(self, obj):
+  #   return obj.get_gender_display()
   
-  def get_title(self, obj):
-    if obj.title == "TL":
-      return "Team Lead"
-    elif obj.title == "ML":
-      return "Mid Lead"
-    else:
-      return "Junior"
+  # title = serializers.SerializerMethodField()
+  # def get_title(self, obj):
+  #   return obj.get_title_display()
+  
+  def to_representation(self, instance):
+    representation = super().to_representation(instance)
     
-  def get_gender(self,request, obj):
-    if request.method == "GET":
-      if obj.title == 1:
-        return "Male"
-      elif obj.title == 2:
-        return "Female"
-      elif obj.title == 3:
-        return "Other"
-      else:
-        return "Prefer Not Say"
-      
-
-
+    representation['gender_text'] = representation['gender']
+    representation['gender'] = dict(Personal.GENDERS)[representation['gender_text']]
+    representation['title'] = dict(Personal.TITLES)[representation['title']]
+    representation['kadir'] = "erhan"
+    return representation
+  
+  def create(self, validated_data):
+    validated_data["created_user_id"] = self.context["request"].user.id
+    return super().create(validated_data)
 
 class DepartmentSerializer(serializers.ModelSerializer):
+  personal_count = serializers.SerializerMethodField()
+  
+  class Meta:
+    model = Department
+    fields = ("id", "name","personal_count")
+    
+  def get_personal_count(self, obj):
+    return obj.personals.count()
+  
+  
+class DepartmentDynamicSerializer(serializers.ModelSerializer):
   personals = PersonalSerializer(many=True, required=False)
   personal_count = serializers.SerializerMethodField()
+  id = serializers.StringRelatedField()
   
   class Meta:
     model = Department

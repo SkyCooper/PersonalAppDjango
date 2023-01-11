@@ -1,9 +1,18 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views import *
+from .routers import CustomReadOnlyRouter
 
 router = routers.DefaultRouter()
-router.register("personal", PersonalMVS)
-router.register("department", DepartmentMVS)
+router_dynamic = CustomReadOnlyRouter()
 
-urlpatterns = router.urls
+router.register(r'personal', PersonalMVS)
+router.register(r'', DepartmentMVS)
+router_dynamic.register(r'department', DynamicDepartmentMVS)
+
+urlpatterns = [
+    path('', include(router.urls)),
+    path('', include(router_dynamic.urls)),
+]
+# urlpatterns = router.urls
+# urlpatterns += router_dinc.urls
