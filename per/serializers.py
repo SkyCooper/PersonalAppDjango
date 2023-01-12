@@ -30,11 +30,10 @@ class PersonalSerializer(serializers.ModelSerializer):
   
   def to_representation(self, instance):
     representation = super().to_representation(instance)
-    
-    representation['gender_text'] = representation['gender']
-    representation['gender'] = dict(Personal.GENDERS)[representation['gender_text']]
+
+    representation['gender'] = dict(Personal.GENDERS)[representation['gender']]
     representation['title'] = dict(Personal.TITLES)[representation['title']]
-    representation['kadir'] = "erhan"
+    # representation['kadir'] = "erhan"
     return representation
   
   def create(self, validated_data):
