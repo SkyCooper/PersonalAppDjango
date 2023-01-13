@@ -8,30 +8,36 @@ from dj_rest_auth.serializers import TokenSerializer
 from .models import Profile
 
 class RegisterSerializer(serializers.ModelSerializer):
-  email = serializers.EmailField(required=True, 
-                                 validators=[UniqueValidator(queryset=User.objects.all())])
+  email = serializers.EmailField(
+    required=True,
+    validators=[UniqueValidator(queryset=User.objects.all())])
   
-  password = serializers.CharField(write_only=True, required=True,
-                                   validators=[validate_password], style={"input_type" : "password"} ) 
+  password = serializers.CharField(
+    write_only=True,
+    required=True,
+    validators=[validate_password],
+    style={"input_type" : "password"} ) 
   
-  password2 = serializers.CharField(write_only=True, required=True, style={"input_type" : "password"}) 
+  password2 = serializers.CharField(
+    write_only=True,
+    required=True,
+    style={"input_type" : "password"}) 
   
   class Meta:
     model = User
     fields = [
-        'username',
-        'first_name',
-        'last_name',
-        'email',
-        'password',
-        'password2'
-        ]
+      'username',
+      'first_name',
+      'last_name',
+      'email',
+      'password',
+      'password2'
+      ]
     
   def validate(self, data):
     if data['password'] != data['password2']:
-        raise serializers.ValidationError(
-            {'password': 'Password fields didnt match.'}
-        )
+      raise serializers.ValidationError(
+        {'password': 'Password fields didnt match.'})
     return data
     
 
@@ -62,7 +68,7 @@ class ProfileSerializer(serializers.ModelSerializer):
   user_id = serializers.IntegerField(required=False)
   class Meta:
     model = Profile
-    fields = ("id","user","user_id", "display_name","avatar", "bio")
+    fields = ("id", "user", "user_id", "display_name", "avatar", "bio")
     
 #! buradaki ProfileSerializer'ın kullanıldığı view (ProfileUpdateView)
 #! RetrieveUpdateAPIView'dan inherit edildiği için create metodu değil update metodu override edilmeli,
