@@ -10,8 +10,10 @@ from .models import Profile
 class RegisterSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(required=True, 
                                  validators=[UniqueValidator(queryset=User.objects.all())])
+  
   password = serializers.CharField(write_only=True, required=True,
                                    validators=[validate_password], style={"input_type" : "password"} ) 
+  
   password2 = serializers.CharField(write_only=True, required=True, style={"input_type" : "password"}) 
   
   class Meta:
@@ -60,9 +62,10 @@ class ProfileSerializer(serializers.ModelSerializer):
   user_id = serializers.IntegerField(required=False)
   class Meta:
     model = Profile
-    fields = "__all__"
+    fields = ("id","user","user_id", "display_name","avatar", "bio")
     
-
+#! buradaki ProfileSerializer'ın kullanıldığı view (ProfileUpdateView)
+#! RetrieveUpdateAPIView'dan inherit edildiği için create metodu değil update metodu override edilmeli,
   def update(self, instance, validated_data):
     instance = super().update(instance, validated_data)
     instance.user_id = self.context["request"].user.id
