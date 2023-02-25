@@ -14,5 +14,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(router_dynamic.urls)),
 ]
+
+#? 2nd
 # urlpatterns = router.urls
 # urlpatterns += router_dinc.urls
